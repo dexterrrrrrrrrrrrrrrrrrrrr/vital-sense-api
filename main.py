@@ -9,10 +9,10 @@ app = FastAPI(title="MINDMATE AI API")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
-if not GEMINI_API_KEY or not NVIDIA_API_KEY:
-    raise RuntimeError("Fatal Eror! one or more API keys are missing.")
+if not NVIDIA_API_KEY:
+    raise RuntimeError("NVIDIA_API_KEY is required. GEMINI_API_KEY is optional for fallback.")
 
-origins = os.getenv("ALLOWED_ORIGINS").split(',')
+origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(',') if origin.strip()]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 

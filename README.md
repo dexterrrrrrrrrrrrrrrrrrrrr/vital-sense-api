@@ -39,7 +39,7 @@ Frontend
    ↓
 MindMate API (FastAPI)
    ↓
-Primary LLM → NVIDIA NIM (OpenAI's GPT OSS 120B)
+Primary LLM → NVIDIA NIM (NVIDIA's Nemotron 3 Nano 30B A3B)
    ↓
 Fallback LLM → Gemini 2.5 Flash Lite
    ↓
@@ -98,7 +98,8 @@ Create a `.env` file in the root directory.
 
 ```js
 NVIDIA_API_KEY=
-GEMINI_API_KEY=
+NVIDIA_MODEL=nvidia/nemotron-3-nano-30b-a3b
+GEMINI_API_KEY=            (optional fallback)
 ALLOWED_ORIGINS=            (cors for deployment)
 PYHTON_VERSION=             (optional)
 ```
@@ -148,7 +149,7 @@ This provides interactive API testing.
 
 ### Primary Chat Model
 
-**GPT OSS 120B**
+**Nemotron 3 Nano 30B A3B**
 Accessed via **NVIDIA NIM**.
 
 Used for:
@@ -233,7 +234,7 @@ POST /api/v1/
 {
   "role": "model",
   "content": "Hello! How can I support you today?",
-  "model": "openai-oss-120b"
+  "model": "nvidia/nemotron-3-nano-30b-a3b"
 }
 ```
 

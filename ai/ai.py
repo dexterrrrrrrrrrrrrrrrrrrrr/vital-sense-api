@@ -4,11 +4,9 @@ import os
 from google import genai
 from google.genai import types
 
-client = genai.Client()
-
-
 def generate_gemini(prompt: str, msgs: list[Msg]) -> MsgRead:
     try:
+        client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         data = [
             types.Content(
                 role=MsgRole.USER,
@@ -34,6 +32,7 @@ def generate_gemini(prompt: str, msgs: list[Msg]) -> MsgRead:
 
 def generate_response(prompt: str, msgs: list[Msg]) -> MsgRead:
     NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
+    model = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3-nano-30b-a3b")
     url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
     headers = {
@@ -66,17 +65,20 @@ def generate_response(prompt: str, msgs: list[Msg]) -> MsgRead:
     
     try:
         data = {
-            "model": "openai/gpt-oss-120b",
+            "model": model,
             "messages": content
         }
 
-        response = requests.post(url, headers=headers, json=data)
+        response = requests.post(url, headers=headers, json=data, timeout=(10, 120))
+        response.raise_for_status()
         content = response.json()
-        reply = MsgRead(role=MsgRole.MODEL, content=content['choices'][0]['message']['content'], model="openai")
-        print("used model: openai")
+        reply = MsgRead(role=MsgRole.MODEL, content=content['choices'][0]['message']['content'], model=model)
+        print(f"used model: {model}")
         return reply
-    except:
-        return generate_gemini(prompt, msgs)
+    except (requests.RequestException, ValueError, KeyError, IndexError, TypeError):
+        if os.getenv("GEMINI_API_KEY"):
+            return generate_gemini(prompt, msgs)
+        raise ValueError("NVIDIA chat request failed. Check your API key and model access.") from None
 
 
 
