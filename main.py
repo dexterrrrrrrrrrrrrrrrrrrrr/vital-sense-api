@@ -6,11 +6,10 @@ import os
 
 app = FastAPI(title="MINDMATE AI API")
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 if not NVIDIA_API_KEY:
-    raise RuntimeError("NVIDIA_API_KEY is required. GEMINI_API_KEY is optional for fallback.")
+    raise RuntimeError("NVIDIA_API_KEY is required.")
 
 origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(',') if origin.strip()]
 

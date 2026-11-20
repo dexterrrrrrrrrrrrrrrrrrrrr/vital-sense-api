@@ -3,7 +3,7 @@
 MindMate AI is a conversational AI backend designed for emotionally supportive dialogue and realistic voice responses.
 It integrates large language models and neural text-to-speech to provide a natural chat and voice experience.
 
-The backend is built using FastAPI and integrates AI models through NVIDIA NIM APIs and Google AI services.
+The backend is built using FastAPI and integrates AI models through NVIDIA NIM APIs.
 
 ## 🖥️ Deployment
 
@@ -30,7 +30,6 @@ open api docs:
 
 - 🩺 Health monitoring endpoint
 
-- 🔁 Backup LLM fallback system
 
 ## 🏗 Architecture
 
@@ -40,8 +39,6 @@ Frontend
 MindMate API (FastAPI)
    ↓
 Primary LLM → NVIDIA NIM (NVIDIA's Nemotron 3 Nano 30B A3B)
-   ↓
-Fallback LLM → Gemini 2.5 Flash Lite
    ↓
 Text Response
    ↓
@@ -99,7 +96,6 @@ Create a `.env` file in the root directory.
 ```js
 NVIDIA_API_KEY=
 NVIDIA_MODEL=nvidia/nemotron-3-nano-30b-a3b
-GEMINI_API_KEY=            (optional fallback)
 ALLOWED_ORIGINS=            (cors for deployment)
 PYHTON_VERSION=             (optional)
 ```
@@ -108,7 +104,6 @@ These keys are required for:
 
 - Chat generation via NVIDIA NIM
 
-- Backup responses using Gemini 2.5 Flash Lite
 
 ### 5️⃣ Start the Server
 
@@ -158,18 +153,6 @@ Used for:
 
 - contextual conversation responses
 ---
-### Backup Chat Model
-
-**Gemini 2.5 Flash Lite**
-
-Used when:
-
-- primary model fails
-
-- request limits are hit
-
-- latency fallback is required
----
 ### Text-to-Speech
 
 **Magpie Multilingual TTS**
@@ -198,7 +181,6 @@ AI Services
 
 - NVIDIA NIM
 
-- Gemini API
 
 - Magpie TTS
 
