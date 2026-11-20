@@ -1,3 +1,7 @@
+# Third Party Notices
+
+Vital Sense includes code derived from [MINDMATE_AI_API](https://github.com/Sonic7002/MINDMATE_AI_API). The original copyright and permission notice is retained below for that code. Repository ownership and current maintenance are managed by ANURAG.
+
 MIT License
 
 Copyright (c) 2026 Srijan Kargupta

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-app = FastAPI(title="MINDMATE AI API")
+app = FastAPI(title="Vital Sense API")
 
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 

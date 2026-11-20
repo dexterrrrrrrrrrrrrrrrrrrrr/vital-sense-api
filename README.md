@@ -1,343 +1,112 @@
-# 🧠 MindMate AI API
+# Vital Sense API
 
-MindMate AI is a conversational AI backend designed for emotionally supportive dialogue and realistic voice responses.
-It integrates large language models and neural text-to-speech to provide a natural chat and voice experience.
+The NVIDIA-powered backend for Vital Sense. It provides conversational replies, short chat titles, speech generation, and speech transcription through a FastAPI service.
 
-The backend is built using FastAPI and integrates AI models through NVIDIA NIM APIs.
+**Owner and maintainer:** [ANURAG](https://github.com/dexterrrrrrrrrrrrrrrrrrrrr)
 
-## 🖥️ Deployment
+[Open Vital Sense](https://mindmate-ai-anurag.vercel.app) · [Frontend repository](https://github.com/dexterrrrrrrrrrrrrrrrrrrrr/MINDMATE-AI) · [Interactive API docs](https://mindmate-ai-api-anurag.onrender.com/docs) · [API reference](https://mindmate-ai-api-anurag.onrender.com/scalar_docs/)
 
-- deployed: <https://mindmate-ai-api.onrender.com>
+## AI providers
 
+- **Conversation and titles:** NVIDIA Nemotron 3 Nano Omni, through NVIDIA NIM.
+- **Speech:** NVIDIA Riva and Magpie multilingual text to speech.
+- **Provider configuration:** NVIDIA only; no Gemini integration or fallback.
 
-open api docs: 
-- <https://mindmate-ai-api.onrender.com/docs>
+The default chat model is `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning`. Requests disable thinking output so the frontend receives the final answer. The NVIDIA speech client is pinned to a release compatible with the installed Riva library.
 
- or
+## Run locally
 
-- <https://mindmate-ai-api.onrender.com/scalar_docs>
+Use Python 3.11 and a valid NVIDIA API key.
 
+```bash
+git clone https://github.com/dexterrrrrrrrrrrrrrrrrrrrr/MINDMATE_AI_API.git
+cd MINDMATE_AI_API
+python3.11 -m venv .venv
+source .venv/bin/activate
+bash scripts/build.sh
+cp .env.example .env
+```
 
-## ✨ Features
+Fill in your private `.env` file:
 
-- 💬 AI chat responses
+```dotenv
+NVIDIA_API_KEY=your_nvidia_secret_key
+NVIDIA_MODEL=nvidia/nemotron-3-nano-omni-30b-a3b-reasoning
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
 
-- 🧠 Automatic conversation name generation
+Then start the service:
 
-- 🔊 Neural text-to-speech voice responses
+```bash
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
 
-- ⚡ Fast REST API
+Open [localhost:8000/docs](http://127.0.0.1:8000/docs). The `.env` file is excluded from Git; never commit or put a secret key in the frontend.
 
-- 🩺 Health monitoring endpoint
+## Endpoints
 
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/api/v1/` | Generate a conversational reply |
+| POST | `/api/v1/convo/` | Generate a short conversation title |
+| POST | `/api/v1/audio/` | Generate a WAV voice response |
+| POST | `/api/v1/audio/text` | Transcribe an uploaded WAV file |
+| GET, HEAD | `/health/` | Check service availability |
+| GET | `/docs` | Interactive OpenAPI documentation |
+| GET | `/scalar_docs/` | Scalar API reference |
 
-## 🏗 Architecture
+### Chat
+
+Send an array of messages. Supported roles are `user` and `model`.
+
+```bash
+curl http://127.0.0.1:8000/api/v1/ \
+  -H 'Content-Type: application/json' \
+  -d '[{"role":"user","content":"Help me plan a calm morning."}]'
+```
+
+The response includes `role`, `content`, and the selected `model`.
+
+### Voice
+
+```bash
+curl http://127.0.0.1:8000/api/v1/audio/ \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"Hello, I am Vital Sense.","voice":"Mia"}' \
+  --output reply.wav
+```
+
+The response is `audio/wav`. Generated temporary audio files are removed after the response is sent.
+
+## Deploy on Render
+
+Use the repository root with these settings:
+
+| Setting | Value |
+| --- | --- |
+| Runtime | Python 3.11 |
+| Build command | `bash scripts/build.sh` |
+| Start command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| Health path | `/health/` |
+
+Set `NVIDIA_API_KEY`, `NVIDIA_MODEL`, and `ALLOWED_ORIGINS` in the service environment. Include the deployed frontend's exact HTTPS origin in `ALLOWED_ORIGINS`. Configure `PYTHON_VERSION` in Render if pinning its Python runtime.
+
+The current service is hosted at [mindmate-ai-api-anurag.onrender.com](https://mindmate-ai-api-anurag.onrender.com/health/), with the frontend at [mindmate-ai-anurag.vercel.app](https://mindmate-ai-anurag.vercel.app).
+
+## Project structure
 
 ```text
-Frontend
-   ↓
-MindMate API (FastAPI)
-   ↓
-Primary LLM → NVIDIA NIM (NVIDIA's Nemotron 3 Nano Omni 30B A3B)
-   ↓
-Text Response
-   ↓
-Magpie TTS
-   ↓
-.wav Voice Output
+ai/                   NVIDIA chat integration
+routes/               Chat, title, voice, health, and documentation routes
+schemas/              Request and response validation
+services/             Conversation prompts and audio processing
+scripts/              Dependency setup and NVIDIA speech commands
+main.py               FastAPI application and CORS configuration
+requirements.txt      Pinned Python dependencies
 ```
 
-## ▶️ How to Run MindMate AI
+## Project ownership
 
-Follow these steps to run the backend locally.
+Vital Sense API is owned and maintained in ANURAG's GitHub account as the backend for Vital Sense. Original third-party notices are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/mindmate-ai.git
-cd mindmate-ai
-```
-
-### 2️⃣ Create a Virtual Environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-On Windows:
-
-```bash
-.venv\Scripts\activate
-```
-
-### 3️⃣ Install Dependencies
-
-MindMate uses **Magpie TTS** from **NVIDIA** Riva and other dependencies.
-
-Run the setup script:
-
-```bash
-./scripts/build.sh
-```
-
-This script:
-
-- downloads required pyhton modules
-
-- downloads required client libraries
-
-- prepares the text-to-speech environment
-
-### 4️⃣ Set Environment Variables
-
-Create a `.env` file in the root directory.
-
-```js
-NVIDIA_API_KEY=
-NVIDIA_MODEL=nvidia/nemotron-3-nano-omni-30b-a3b-reasoning
-ALLOWED_ORIGINS=            (cors for deployment)
-PYHTON_VERSION=             (optional)
-```
-
-These keys are required for:
-
-- Chat generation via NVIDIA NIM
-
-
-### 5️⃣ Start the Server
-
-for production:
-
-```bash
-fastapi run
-```
-
-for development:
-
-```bash
-fastapi dev
-```
-
-The API will start at:
-
-```bash
-http://localhost:8000
-```
-
-### 6️⃣ Access API Documentation
-
-Open in browser:
-
-```bash
-http://localhost:8000/scalar_docs/
-```
-
-or
-
-```bash
-http://localhost:8000/docs/
-```
-
-This provides interactive API testing.
-## 🤖 AI Models Used
-
-### Primary Chat Model
-
-**Nemotron 3 Nano Omni 30B A3B**
-Accessed via **NVIDIA NIM**.
-
-Used for:
-
-- main chat generation
-
-- contextual conversation responses
----
-### Text-to-Speech
-
-**Magpie Multilingual TTS**
-
-Provided through **NVIDIA Riva**.
-
-Used for:
-
-- converting chatbot text responses into natural speech
-
-- generating `.wav` audio for frontend playback
-
-## 🚀 Tech Stack
-
-Backend
-
-- FastAPI
-
-- Uvicorn
-
-- Pydantic
-
-- Python 3.11
-
-AI Services
-
-- NVIDIA NIM
-
-
-- Magpie TTS
-
-Deployment
-
-- Render
-
-## 📡 API Endpoints
-
-### 💬 Chat Response
-
-Generates chatbot replies.
-
-```bash
-POST /api/v1/
-```
-
-
-**Request**
-
-```json
-[
-  {
-    "role": "user",
-    "content": "Hello"
-  }
-]
-```
-
-**Response**
-
-```json
-{
-  "role": "model",
-  "content": "Hello! How can I support you today?",
-  "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
-}
-```
-
-### 🧠 Conversation Title Generation
-
-Automatically generates a title for a conversation thread.
-
-```bash
-POST /api/v1/convo/
-```
-
-Example use cases:
-
-- chat history titles
-
-- conversation summarization
-
-### 🔊 Voice Generation
-
-Converts text into realistic speech.
-
-```bash
-POST /api/v1/audio/
-```
-
-**Request**
-```json
-{
-  "text": "Hello, I am MindMate.",
-  "voice": "Aria"
-}
-```
-
-**Response**
-
-```bash
-audio/wav
-```
-
-Generated using Magpie multilingual TTS.
-
-### 🩺 Health Check
-
-Used for API uptime monitoring and server pinging.
-
-```bash
-HEAD /health/
-```
-
-Returns:
-
-```
-200 OK
-```
-
-## 📚 API Documentation
-
-Interactive documentation available at:
-
-```bash
-/scalar_docs/
-/docs/
-```
-
-## 📂 Project Structure
-
-```bash
-mindmate-ai
-├── ai
-│   ├── __init__.py
-│   └── ai.py
-├── routes
-│   ├── __init__.py
-│   ├── deps.py
-│   ├── convo_route.py
-│   ├── msg_route.py
-│   ├── audio_route.py
-│   ├── scalar_docs.py
-│   └── health.py
-├── schemas
-│   ├── __init__.py
-│   ├── audio.py
-│   └── msg.py
-├── scripts
-│   ├── build.sh
-│   └── tts.sh
-├── services
-│   ├── __init__.py
-│   ├── audio_response.py
-│   └── response.py
-├── main.py
-├── README.md
-├── LICENCE
-└── requirements.txt
-```
-
-## 🧩 System Design Highlights
-
-- LLM fallback architecture
-
-- separate endpoints for chat, voice, and conversation metadata
-
-- voice generation pipeline using NVIDIA TTS
-
-- stateless API design for frontend integration
-
-## ⚠ Disclaimer
-
-MindMate AI is not a replacement for professional mental health services.
-If you are experiencing a mental health crisis, please contact a qualified professional.
-
-## 👨‍💻 Author
-
-Built by **Srijan Kargupta**.
-
-## 🏁 Hackathon Project
-
-MindMate AI was developed as a hackathon project exploring:
-
-- conversational AI
-
-- AI-driven emotional support
-
-- real-time neural speech synthesis
+Vital Sense offers general support and information. It does not diagnose conditions or replace professional care.

@@ -8,5 +8,5 @@ router = APIRouter(prefix="/scalar_docs", tags=["scalar"])
 def get_scalar_docs():
     return get_scalar_api_reference(
         openapi_url=app.openapi_url,
-        title="Scalar API"
+        title="Vital Sense API Reference"
     )
