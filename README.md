@@ -110,3 +110,21 @@ requirements.txt      Pinned Python dependencies
 Vital Sense API is owned and maintained in ANURAG's GitHub account as the backend for Vital Sense. Original third-party notices are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Vital Sense offers general support and information. It does not diagnose conditions or replace professional care.
+
+## MongoDB accounts
+
+Set `MONGODB_URI` to your MongoDB connection string and `MONGODB_DB=vital_sense` in the backend environment. Use a database user with read/write access limited to this database. Allow only your application server IP ranges in Atlas. Keep credentials out of Git and out of frontend variables. Set `COOKIE_SECURE=true` in production and `false` only for local HTTP testing.
+
+The frontend proxies `/api/v1/account/*` to this service so sessions use same-origin HttpOnly cookies (Secure in production, SameSite=Lax). Keep the production frontend in `ALLOWED_ORIGINS`; account mutations require `X-Vital-Sense: 1` and reject unapproved origins.
+
+- `POST /api/v1/account/signup`: name (`displayName`), email, password (10–128 characters).
+- `POST /api/v1/account/login`, `POST /api/v1/account/logout`.
+- `GET /api/v1/account/me`: current account; `DELETE` with password removes account and saved data.
+- `GET/PUT /api/v1/account/preferences`: theme preference.
+- `GET/POST /api/v1/account/records/{kind}` and `PATCH/DELETE /api/v1/account/records/{kind}/{id}` for chats, journals, goals, and moods.
+
+Passwords use Argon2id hashes. Only SHA-256 hashes of random seven-day session tokens are stored in MongoDB. All data queries enforce ownership from the authenticated session; the browser cannot choose a user ID. Unique email and expiration indexes are initialized automatically. Login and signup attempts are limited using shared MongoDB counters. Database outages do not prevent guest AI chat from starting. Google OAuth and password-reset email delivery are deferred.
+
+### Verify account security
+
+Run `MONGODB_TEST_URI=mongodb://127.0.0.1:27018 .venv/bin/python -m unittest discover -s tests -v` against a disposable local MongoDB server. The tests create and remove their own uniquely named database.
