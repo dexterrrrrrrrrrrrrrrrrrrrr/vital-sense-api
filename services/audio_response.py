@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from uuid import uuid4
 import os
 from schemas.audio import Audio
@@ -9,7 +10,7 @@ class AudioService:
     def generate_audio(self, data: Audio) -> str:
         try:
             output_file = f"{uuid4()}.wav"
-            subprocess.run(["./scripts/tts.sh", data.text, data.voice, output_file], check=True)
+            subprocess.run(["./scripts/tts.sh", data.text, data.voice, output_file], check=True, env={**os.environ, "PYTHON_BIN": sys.executable})
             
             if not os.path.exists(output_file):
                 raise ValueError("Failed to generate audio, try again")
@@ -28,6 +29,7 @@ class AudioService:
 
             result = subprocess.run(
                 ["./scripts/stt.sh", tmp_path],
+                env={**os.environ, "PYTHON_BIN": sys.executable},
                 capture_output=True,
                 text=True
             )

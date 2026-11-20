@@ -8,7 +8,7 @@ echo "cloning tts client..."
 if [ ! -d python-clients/.git ]; then
     git clone https://github.com/nvidia-riva/python-clients.git
 fi
-git -C python-clients checkout 6594587c5ffb60d185c997cf000cb9c0058a3339
+git -C python-clients checkout f050058fa5068b0ba0bb329af0e863208f785bc1
 
 echo "setting script permissions..."
 chmod +x scripts/tts.sh scripts/stt.sh
