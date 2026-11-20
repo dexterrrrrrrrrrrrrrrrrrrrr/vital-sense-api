@@ -38,7 +38,7 @@ Frontend
    ↓
 MindMate API (FastAPI)
    ↓
-Primary LLM → NVIDIA NIM (NVIDIA's Nemotron 3 Nano 30B A3B)
+Primary LLM → NVIDIA NIM (NVIDIA's Nemotron 3 Nano Omni 30B A3B)
    ↓
 Text Response
    ↓
@@ -95,7 +95,7 @@ Create a `.env` file in the root directory.
 
 ```js
 NVIDIA_API_KEY=
-NVIDIA_MODEL=nvidia/nemotron-3-nano-30b-a3b
+NVIDIA_MODEL=nvidia/nemotron-3-nano-omni-30b-a3b-reasoning
 ALLOWED_ORIGINS=            (cors for deployment)
 PYHTON_VERSION=             (optional)
 ```
@@ -144,7 +144,7 @@ This provides interactive API testing.
 
 ### Primary Chat Model
 
-**Nemotron 3 Nano 30B A3B**
+**Nemotron 3 Nano Omni 30B A3B**
 Accessed via **NVIDIA NIM**.
 
 Used for:
@@ -216,7 +216,7 @@ POST /api/v1/
 {
   "role": "model",
   "content": "Hello! How can I support you today?",
-  "model": "nvidia/nemotron-3-nano-30b-a3b"
+  "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
 }
 ```
 
