@@ -4,7 +4,7 @@ The NVIDIA-powered backend for Vital Sense. It provides conversational replies, 
 
 **Owner and maintainer:** [ANURAG](https://github.com/dexterrrrrrrrrrrrrrrrrrrrr)
 
-[Open Vital Sense](https://mindmate-ai-anurag.vercel.app) · [Frontend repository](https://github.com/dexterrrrrrrrrrrrrrrrrrrrr/MINDMATE-AI) · [Interactive API docs](https://mindmate-ai-api-anurag.onrender.com/docs) · [API reference](https://mindmate-ai-api-anurag.onrender.com/scalar_docs/)
+[Open Vital Sense](https://vital-sense-anurag.vercel.app) · [Frontend repository](https://github.com/dexterrrrrrrrrrrrrrrrrrrrr/vital-sense) · [Interactive API docs](https://mindmate-ai-api-anurag.onrender.com/docs) · [API reference](https://mindmate-ai-api-anurag.onrender.com/scalar_docs/)
 
 ## AI providers
 
@@ -19,8 +19,8 @@ The default chat model is `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning`. Reque
 Use Python 3.11 and a valid NVIDIA API key.
 
 ```bash
-git clone https://github.com/dexterrrrrrrrrrrrrrrrrrrrr/MINDMATE_AI_API.git
-cd MINDMATE_AI_API
+git clone https://github.com/dexterrrrrrrrrrrrrrrrrrrrr/vital-sense-api.git
+cd vital-sense-api
 python3.11 -m venv .venv
 source .venv/bin/activate
 bash scripts/build.sh
@@ -91,7 +91,7 @@ Use the repository root with these settings:
 
 Set `NVIDIA_API_KEY`, `NVIDIA_MODEL`, and `ALLOWED_ORIGINS` in the service environment. Include the deployed frontend's exact HTTPS origin in `ALLOWED_ORIGINS`. Configure `PYTHON_VERSION` in Render if pinning its Python runtime.
 
-The current service is hosted at [mindmate-ai-api-anurag.onrender.com](https://mindmate-ai-api-anurag.onrender.com/health/), with the frontend at [mindmate-ai-anurag.vercel.app](https://mindmate-ai-anurag.vercel.app).
+The current service is hosted at [vital-sense-api-anurag.onrender.com](https://mindmate-ai-api-anurag.onrender.com/health/), with the frontend at [vital-sense-anurag.vercel.app](https://vital-sense-anurag.vercel.app).
 
 ## Project structure
 
