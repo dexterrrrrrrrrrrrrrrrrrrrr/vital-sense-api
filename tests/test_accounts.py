@@ -123,9 +123,10 @@ class AccountsTest(unittest.TestCase):
             return result
 
     def test_google_signup_returning_login_and_replay(self):
-        claims = self.google_claims(self.a)
+        claims = self.google_claims(self.a, picture="https://lh3.googleusercontent.com/test-photo")
         result = self.google_login(self.a, claims)
         self.assertEqual(result.status_code, 200, result.text)
+        self.assertEqual(result.json()["photoURL"], "https://lh3.googleusercontent.com/test-photo")
         uid = result.json()["uid"]
         self.assertFalse(result.json()["hasPassword"])
         self.assertIn("HttpOnly", result.headers["set-cookie"])

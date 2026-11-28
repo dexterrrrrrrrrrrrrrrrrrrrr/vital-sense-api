@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from threading import BoundedSemaphore
 from typing import Literal
+from urllib.parse import urlsplit
 
 from google.auth.exceptions import GoogleAuthError
 from google.auth.transport.requests import Request as GoogleRequest
@@ -87,7 +88,7 @@ def rate_limit(db, key, maximum):
 
 
 def public_user(user):
-    return {"uid": user["_id"], "email": user["email"], "displayName": user["displayName"], "photoURL": None, "hasPassword": bool(user.get("passwordHash"))}
+    return {"uid": user["_id"], "email": user["email"], "displayName": user["displayName"], "photoURL": user.get("photoURL"), "hasPassword": bool(user.get("passwordHash"))}
 
 
 def token_hash(token):
@@ -239,6 +240,18 @@ def google_login(data: GoogleCredentials, request: Request, response: Response, 
         if user.get("deleting"):
             raise HTTPException(401, "This account is unavailable.")
         consume_google_nonce(db, nonce)
+    # Only accept Google's hosted HTTPS photo from the verified identity token.
+    picture = claims.get("picture")
+    photo = None
+    if isinstance(picture, str) and len(picture) <= 2048:
+        try:
+            parsed = urlsplit(picture)
+            if parsed.scheme == "https" and (parsed.hostname or "").endswith(".googleusercontent.com") and not parsed.username and not parsed.password:
+                photo = picture
+        except ValueError:
+            pass
+    db.users.update_one({"_id": user["_id"]}, {"$set": {"photoURL": photo}})
+    user["photoURL"] = photo
     set_session(db, user, response)
     response.delete_cookie(GOOGLE_COOKIE, path="/api/v1/account")
     return public_user(user)
