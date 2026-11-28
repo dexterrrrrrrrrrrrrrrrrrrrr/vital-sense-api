@@ -128,3 +128,20 @@ Passwords use Argon2id hashes. Only SHA-256 hashes of random seven-day session t
 ### Verify account security
 
 Run `MONGODB_TEST_URI=mongodb://127.0.0.1:27018 .venv/bin/python -m unittest discover -s tests -v` against a disposable local MongoDB server. The tests create and remove their own uniquely named database.
+
+## Sign in with Google
+
+Google sign-in uses Google Identity Services and the existing MongoDB account/session storage. Email/password login and guest mode remain available. The backend verifies Google ID tokens, binds each attempt to a five-minute one-use nonce, and stores Google's stable subject identifier. Existing email accounts require their current password before Google can be connected. Google-only users confirm account deletion by signing in with Google again.
+
+### Google setup
+
+1. In [Google Auth Platform](https://console.cloud.google.com/auth/clients), select or create your project. Set the app name to **Vital Sense**, choose your support/contact email, and configure an External audience. While testing, add your own Google account as a test user.
+2. Create an OAuth client with application type **Web application**. Add these **Authorized JavaScript origins**:
+   - `https://vital-sense-anurag.vercel.app`
+   - `http://localhost`
+   - `http://localhost:5173`
+3. Copy the public client ID (ending in `.apps.googleusercontent.com`) into the backend's `GOOGLE_CLIENT_ID` environment variable on Render, then deploy the backend. For local development, put it in the backend's ignored `.env` file. No client secret, Google API access token, Firebase project, or authorized redirect URI is needed for this popup/callback flow.
+4. Deploy the frontend. It reads the public client ID from `/api/v1/account/status`; the Google button appears only when configured. Google tokens are exchanged for the existing HttpOnly session and are never saved in browser storage.
+5. Test sign-up, sign-out, returning sign-in, and connecting an existing email account on the exact authorized origin. Requests only need basic identity (name/email); no Gmail, Drive, or Calendar access is requested. Configure Google's production publishing requirements before inviting all users.
+
+Google setup reference: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
